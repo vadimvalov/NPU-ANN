@@ -1,7 +1,9 @@
 import numpy as np
 
-from .activations.sigmoid import Sigmoid
-from .activations.tanh import Tanh
+from .layers.linear import Linear
+from .activations.relu import ReLU
+from .core.sequential import Sequential
+from .losses.mse import MSELoss
 
 
 def main():
@@ -9,34 +11,32 @@ def main():
 
     x = np.random.randn(2, 3)
 
-    sigmoid = Sigmoid()
-    tanh = Tanh()
+    # fake target
+    y = np.random.randn(2, 4)
+
+    model = Sequential([
+        Linear(3, 4),
+        ReLU()
+    ])
+
+    loss_fn = MSELoss()
 
     print("INPUT:")
     print(x)
 
+    print("\nTARGET:")
+    print(y)
+
     # forward
-    out_sigmoid = sigmoid.forward(x)
-    out_tanh = tanh.forward(x)
+    preds = model.forward(x)
 
-    print("\nSIGMOID OUTPUT:")
-    print(out_sigmoid)
+    print("\nPREDICTIONS:")
+    print(preds)
 
-    print("\nTANH OUTPUT:")
-    print(out_tanh)
-
-    # backward
-    grad_out = np.ones_like(x)
-
-    grad_sigmoid = sigmoid.backward(grad_out)
-    grad_tanh = tanh.backward(grad_out)
-
-    print("\nSIGMOID GRAD:")
-    print(grad_sigmoid)
-
-    print("\nTANH GRAD:")
-    print(grad_tanh)
-
+    # loss
+    loss = loss_fn.forward(preds, y)
+    print("\nLOSS:")
+    print(loss)
 
 if __name__ == "__main__":
     main()
@@ -45,21 +45,15 @@ if __name__ == "__main__":
 # [[ 0.49671415 -0.1382643   0.64768854]
 #  [ 1.52302986 -0.23415337 -0.23413696]]
 
-# SIGMOID OUTPUT:
-# [[0.62168683 0.46548889 0.65648939]
-#  [0.82098421 0.44172766 0.44173171]]
+# TARGET:
+# [[ 1.57921282  0.76743473 -0.46947439  0.54256004]
+#  [-0.46341769 -0.46572975  0.24196227 -1.91328024]]
 
-# TANH OUTPUT:
-# [[ 0.45952909 -0.13738992  0.57011185]
-#  [ 0.90922422 -0.22996582 -0.22995027]]
+# PREDICTIONS:
+# [[-0.         -0.         -0.          0.00259151]
+#  [-0.         -0.         -0.          0.00505503]]
 
-# SIGMOID GRAD:
-# [[0.23519231 0.24880898 0.22551107]
-#  [0.14696914 0.24660433 0.24660481]]
+# LOSS:
+# 0.9706321916512981
 
-# TANH GRAD:
-# [[0.78883302 0.98112401 0.67497248]
-#  [0.17331133 0.94711572 0.94712287]]
-
-# ok it just works, tanh is literally taken from the numpy
-# sigmoid is literally just a 1/(1+e^-x) func
+# Now we know that we have some problems, that's why we need MSE
