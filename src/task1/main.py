@@ -1,8 +1,7 @@
 import numpy as np
 
-from .layers.linear import Linear
-from .activations.relu import ReLU
-from .core.sequential import Sequential
+from .activations.sigmoid import Sigmoid
+from .activations.tanh import Tanh
 
 
 def main():
@@ -10,34 +9,33 @@ def main():
 
     x = np.random.randn(2, 3)
 
-    model = Sequential([
-        Linear(3, 4),
-        ReLU()
-    ])
+    sigmoid = Sigmoid()
+    tanh = Tanh()
 
     print("INPUT:")
     print(x)
 
     # forward
-    out = model.forward(x)
+    out_sigmoid = sigmoid.forward(x)
+    out_tanh = tanh.forward(x)
 
-    print("\nOUTPUT:")
-    print(out)
+    print("\nSIGMOID OUTPUT:")
+    print(out_sigmoid)
+
+    print("\nTANH OUTPUT:")
+    print(out_tanh)
 
     # backward
-    grad_out = np.ones_like(out)
-    grad_input = model.backward(grad_out)
+    grad_out = np.ones_like(x)
 
-    print("\nGRAD INPUT:")
-    print(grad_input)
+    grad_sigmoid = sigmoid.backward(grad_out)
+    grad_tanh = tanh.backward(grad_out)
 
-    linear_layer = model.layers[0] # so we can check grads further
+    print("\nSIGMOID GRAD:")
+    print(grad_sigmoid)
 
-    print("\nGRAD W:")
-    print(linear_layer.dW)
-
-    print("\nGRAD b:")
-    print(linear_layer.db)
+    print("\nTANH GRAD:")
+    print(grad_tanh)
 
 
 if __name__ == "__main__":
@@ -47,30 +45,21 @@ if __name__ == "__main__":
 # [[ 0.49671415 -0.1382643   0.64768854]
 #  [ 1.52302986 -0.23415337 -0.23413696]]
 
-# OUTPUT:
-# [[-0.          0.00081402 -0.          0.0073757 ]
-#  [ 0.02917566  0.0140953  -0.          0.01200759]]
+# SIGMOID OUTPUT:
+# [[0.62168683 0.46548889 0.65648939]
+#  [0.82098421 0.44172766 0.44173171]]
 
-# GRAD INPUT:
-# [[ 0.01309995 -0.0237901  -0.0024804 ]
-#  [ 0.02889208 -0.02842428 -0.01972958]]
+# TANH OUTPUT:
+# [[ 0.45952909 -0.13738992  0.57011185]
+#  [ 0.90922422 -0.22996582 -0.22995027]]
 
-# GRAD W:
-# [[ 1.52302986  2.01974401  0.          2.01974401]
-#  [-0.23415337 -0.37241768  0.         -0.37241768]
-#  [-0.23413696  0.41355158  0.          0.41355158]]
+# SIGMOID GRAD:
+# [[0.23519231 0.24880898 0.22551107]
+#  [0.14696914 0.24660433 0.24660481]]
 
-# GRAD b:
-# [[1. 2. 0. 2.]]
+# TANH GRAD:
+# [[0.78883302 0.98112401 0.67497248]
+#  [0.17331133 0.94711572 0.94712287]]
 
-# Sequential applies layers one by one:
-# forward: Linear → ReLU
-# backward: ReLU → Linear (reverse order)
-# Output shape: 2x4 (same as before)
-# grad_out = ones → propagated through ReLU mask
-# backward works automatically:
-# Sequential handles chaining of gradients between layers
-
-# tl;dr 
-# result stays the same, proves it works well lol
-# but now we wrapped it into sequential model, taking the layer and activation
+# ok it just works, tanh is literally taken from the numpy
+# sigmoid is literally just a 1/(1+e^-x) func
