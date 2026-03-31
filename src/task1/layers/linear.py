@@ -6,6 +6,9 @@ class Linear(Layer):
         self.W = np.random.randn(in_features, out_features) * 0.01
         self.b = np.zeros((1, out_features))
 
+        self.dW = np.zeros_like(self.W)
+        self.db = np.zeros_like(self.b)
+
     def forward(self, x):
         self.x = x
         return x @ self.W + self.b
@@ -16,4 +19,7 @@ class Linear(Layer):
         return grad @ self.W.T
 
     def parameters(self):
-        return [(self.W, self.dW), (self.b, self.db)]
+        return [self.W, self.b]
+
+    def gradients(self):
+        return [self.dW, self.db]
