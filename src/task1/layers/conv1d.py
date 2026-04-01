@@ -74,4 +74,7 @@ class Conv1D(Layer):
         return dx
 
     def parameters(self):
-        return [(self.W, self.dW), (self.b, self.db)]
+        return [self.W, self.b]
+
+    def gradients(self):
+        return [self.dW, self.db]
