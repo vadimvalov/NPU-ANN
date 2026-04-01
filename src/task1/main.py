@@ -36,21 +36,54 @@ def main():
         if epoch % 10 == 0:
             print(f"Epoch {epoch}, Loss: {loss}")
 
+from .layers.conv1d import Conv1D
+
+def test_conv1d():
+    np.random.seed(42)
+
+    x = np.random.randn(2, 3, 10)  # (batch, channels, length)
+
+    conv = Conv1D(
+        in_channels=3,
+        out_channels=2,
+        kernel_size=3,
+        stride=1,
+        padding="same"
+    )
+
+    # forward
+    out = conv.forward(x)
+    
+    print("\n\n====================================\n\n")
+    print("FORWARD SHAPE:", out.shape)
+
+    # backward
+    grad = np.random.randn(*out.shape)
+    dx = conv.backward(grad)
+
+    print("GRAD INPUT SHAPE:", dx.shape)
+
+    print("dW:", conv.dW)
+    print("db:", conv.db)
 
 if __name__ == "__main__":
     main()
+    test_conv1d()
 
-# Epoch 0, Loss: 0.9722058667327826
-# Epoch 10, Loss: 0.8962557009499458
-# Epoch 20, Loss: 0.831358903212809
-# Epoch 30, Loss: 0.7754564755383733
-# Epoch 40, Loss: 0.7268942292872348
-# Epoch 50, Loss: 0.6843424132369282
-# Epoch 60, Loss: 0.6467313263264196
-# Epoch 70, Loss: 0.6131997350314083
-# Epoch 80, Loss: 0.5830535480100252
-# Epoch 90, Loss: 0.5557327074634683
-# Epoch 100, Loss: 0.5307846626296182
+# for test_conv1d() we see:
 
-# it learns, it comes closer and closer to zero with 101 epochs
-# it is smart, almost smarter than me atp
+# FORWARD SHAPE: (2, 2, 10)
+# GRAD INPUT SHAPE: (2, 3, 10)
+# dW: [[[-4.8273876  -3.98829166 -1.20567622]
+#   [ 3.03422389 -0.56549329 -3.78142209]
+#   [-5.32627751 -0.20822592  1.68999698]]
+
+#  [[-1.86677394 -4.30629381  3.41680739]
+#   [-1.06102487 -0.12746116 -0.51841376]
+#   [ 6.07037585  0.39489516 -2.70212315]]]
+# db: [[-1.77179372]
+#  [-1.61184475]]
+
+# it means that the output shape is (2, 2, 10)
+# and the input shape is (2, 3, 10)
+# and grads are not zero, which is good
