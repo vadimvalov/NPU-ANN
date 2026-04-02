@@ -1,6 +1,6 @@
 import numpy as np
 
-from .layers.conv1d import Conv1D
+from .layers.conv2d import Conv2D
 from .core.sequential import Sequential
 from .losses.mse import MSELoss
 from .optimizers.sgd import SGD
@@ -9,11 +9,11 @@ from .optimizers.sgd import SGD
 def main():
     np.random.seed(42)
 
-    x = np.random.randn(2, 3, 10)
-    y = np.random.randn(2, 2, 10)
+    x = np.random.randn(2, 3, 8, 8)
+    y = np.random.randn(2, 2, 8, 8)
 
     model = Sequential([
-        Conv1D(
+        Conv2D(
             in_channels=3,
             out_channels=2,
             kernel_size=3,
@@ -26,7 +26,6 @@ def main():
     optimizer = SGD(model.layers, lr=0.01)
 
     for epoch in range(101):
-
         # forward
         preds = model.forward(x)
         loss = loss_fn.forward(preds, y)
